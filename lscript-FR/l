@@ -4106,37 +4106,37 @@ function remote_access
 	then
 		echo -e ""$YS"23"$CE") Demiguise             Outil de cryptage HTA pour RedTeams"
 	else
-		echo -e ""$RS"23"$CE") "$RS"Demiguise"$CE"              Outil de cryptage HTA pour RedTeams"
+		echo -e ""$RS"23"$CE") "$RS"Demiguise"$CE"             Outil de cryptage HTA pour RedTeams"
 	fi
 	if [[ -d /root/DKMC ]]
 	then
 		echo -e ""$YS"24"$CE") DKMC                  Outil d'évasion de Payload malveillant dans une image"
 	else
-		echo -e ""$RS"24"$CE") "$RS"DKMC"$CE"                   Outil d'évasion de Payload malveillant dans une image"
+		echo -e ""$RS"24"$CE") "$RS"DKMC"$CE"                  Outil d'évasion de Payload malveillant dans une image"
 	fi
 	if [[ -d /usr/share/beef-xss ]]
 	then
 		echo -e ""$YS"25"$CE") Beef                  Framework d'exploitation de navigateur"
 	else
-		echo -e ""$RS"25"$CE") "$RS"Beef"$CE"                   Framework d'exploitation de navigateur"
+		echo -e ""$RS"25"$CE") "$RS"Beef"$CE"                  Framework d'exploitation de navigateur"
 	fi
 	if [[ -d /root/Evil-Droid ]]
 	then
 		echo -e ""$YS"26"$CE") Evil-Droid            Pénétrer les plateformes Android"
 	else
-		echo -e ""$RS"26"$CE") "$RS"Evil-Droid"$CE"             Pénétrer les plateformes Android"
+		echo -e ""$RS"26"$CE") "$RS"Evil-Droid"$CE"            Pénétrer les plateformes Android"
 	fi
 	if [[ -d /root/EggShell ]]
 	then
 		echo -e ""$YS"27"$CE") EggShell              Pénétrer les plateformes Android"
 	else
-		echo -e ""$RS"27"$CE") "$RS"EggShell"$CE"               Pénétrer les plateformes Android"
+		echo -e ""$RS"27"$CE") "$RS"EggShell"$CE"              Pénétrer les plateformes Android"
 	fi
 	if [[ -d /root/Zerodoor ]]
 	then
 		echo -e ""$YS"28"$CE") Zerodoor              Pénétrer les plateformes Android"
 	else
-		echo -e ""$RS"28"$CE") "$RS"Zerodoor"$CE"               Pénétrer les plateformes Android"
+		echo -e ""$RS"28"$CE") "$RS"Zerodoor"$CE"              Pénétrer les plateformes Android"
 	fi
 	if [[ -d /root/cromos ]]
 	then
