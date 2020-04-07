@@ -8379,7 +8379,7 @@ function ngrok_option
 					fi
 			fi
 		else
-			echo -e ""$RS"Ngrok N'est pas installé. Tapez '"$CE""$YS"install"$CE""$RS"' pour l'installer."
+			echo -e ""$RS"Ngrok n'est pas installé. Tapez '"$CE""$YS"install"$CE""$RS"' pour l'installer."
 			read INSTALL
 			if [[ "$INSTALL" = "install" ]]
 			then
@@ -8391,7 +8391,7 @@ function ngrok_option
 function geolocate_ip()
 {
 	locbool=1
-	echo -e ""$BS"MErci de patienter..."$CE""
+	echo -e ""$BS"Merci de patienter..."$CE""
 	A1="$1"
 	AA1=$(is_it_an_ip "$A1")
 	if [[ "$AA1" = 1 ]]
