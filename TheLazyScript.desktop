@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=TheLazyScript
+Comment=
+Exec=l
+Icon=/root/lscript/iconlscript.png
+Path=
+Terminal=true
+StartupNotify=false
