@@ -72,6 +72,7 @@ then
 	cp /root/lscript/lh42 /bin/lscript
 	cp /root/lscript/lh43 /bin/lscript
 	cp /root/lscript/TheLazyScript.desktop /root/Desktop
+	cp /root/lscript/TheLazyScript.desktop /root/Bureau
 	clear
 	#required for gui
 	apt-get -y install ncurses-dev
@@ -185,6 +186,7 @@ then
 	cp /root/lscript/lscript-FR/lh42 /bin/lscript
 	cp /root/lscript/lscript-FR/lh43 /bin/lscript
 	cp /root/lscript/TheLazyScript.desktop /root/Desktop
+	cp /root/lscript/TheLazyScript.desktop /root/Bureau
 	clear
 	#requis pour gui
 	apt-get -y install ncurses-dev
