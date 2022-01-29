@@ -133,7 +133,7 @@ then
 elif [[ "$choose" = "2" ]]
 then
 		printf '\033]2;INSTALLEUR\a'
-	echo -e "Appuyez sur \e[1;33une toucher\e[0m pour installer le script..."
+	echo -e "Appuyez sur "\e[1;33"une touche"\e[0m" pour installer le script..."
 	read -n 1
 	clear
 	apt-get -y install gnome-terminal
